@@ -18,6 +18,7 @@
 
 import GObject from 'gi://GObject';
 import St from 'gi://St';
+const GLib = imports.gi.GLib;
 
 import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
@@ -35,11 +36,75 @@ class Indicator extends PanelMenu.Button {
             style_class: 'system-status-icon',
         }));
 
-        let item = new PopupMenu.PopupMenuItem(_('Show Notification'));
-        item.connect('activate', () => {
-            Main.notify(_('Whatʼs up, folks?'));
+        let nordStatus = new PopupMenu.PopupMenuItem(_('Status'));
+        nordStatus.connect('activate', () => {
+            var [ok, out, err, exit] = GLib.spawn_command_line_sync('nordvpn status');
+            Main.notify(_(out.toString().replace("\n", "")));
         });
-        this.menu.addMenuItem(item);
+        this.menu.addMenuItem(nordStatus);
+
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+        let nordConnect = new PopupMenu.PopupSubMenuMenuItem(_('Connect')); 
+        this.menu.addMenuItem(nordConnect);
+
+        let nordConnectFastest = new PopupMenu.PopupMenuItem(_('Fastest'));
+        nordConnectFastest.connect('activate', () => {
+            var [ok, out, err, exit] = GLib.spawn_command_line_sync('nordvpn connect');
+            Main.notify(_('Connecting...'));
+            if (out.toString().includes("connected"))
+            {
+                Main.notify(_("Connected"));
+            }
+            else
+            {
+                Main.notify(_("Failed to connect"));
+            }
+        });
+        nordConnect.menu.addMenuItem(nordConnectFastest);
+
+        let nordConnectUK = new PopupMenu.PopupMenuItem(_('United Kingdom'));
+        nordConnectUK.connect('activate', () => {
+            var [ok, out, err, exit] = GLib.spawn_command_line_sync('nordvpn connect uk');
+            if (out.toString().includes("connected"))
+            {
+                Main.notify(_("Connected"));
+            }
+            else
+            {
+                Main.notify(_("Failed to connect"));
+            }
+        });
+        nordConnect.menu.addMenuItem(nordConnectUK);
+
+        let nordConnectNL = new PopupMenu.PopupMenuItem(_('Netherlands'));
+        nordConnectNL.connect('activate', () => {
+            var [ok, out, err, exit] = GLib.spawn_command_line_sync('nordvpn connect nl');
+            if (out.toString().includes("connected"))
+            {
+                Main.notify(_("Connected"));
+            }
+            else
+            {
+                Main.notify(_("Failed to connect"));
+            }
+        });
+        nordConnect.menu.addMenuItem(nordConnectNL);
+
+        let nordDisconnect = new PopupMenu.PopupMenuItem(_('Disconnect'));
+        nordDisconnect.connect('activate', () => {
+            Main.notify(_('Disconnecting...'));
+            var [ok, out, err, exit] = GLib.spawn_command_line_sync('nordvpn disconnect');
+            if (out.toString().includes("disconnected"))
+            {
+                Main.notify(_("Disconnected"));
+            }
+            else
+            {
+                Main.notify(_("You are not connected to a VPN"));
+            }
+        });
+        this.menu.addMenuItem(nordDisconnect);
     }
 });
 
