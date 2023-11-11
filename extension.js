@@ -16,106 +16,25 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-import GObject from 'gi://GObject';
-import St from 'gi://St';
-const GLib = imports.gi.GLib;
+'use strict';
 
-import {Extension, gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
-import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
-import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
-import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as Manager from './manager.js';
 
-const Indicator = GObject.registerClass(
-class Indicator extends PanelMenu.Button {
-    _init() {
-        super._init(0.0, _('My Shiny Indicator'));
-
-        this.add_child(new St.Icon({
-            icon_name: 'face-smile-symbolic',
-            style_class: 'system-status-icon',
-        }));
-
-        let nordStatus = new PopupMenu.PopupMenuItem(_('Status'));
-        nordStatus.connect('activate', () => {
-            var [ok, out, err, exit] = GLib.spawn_command_line_sync('nordvpn status');
-            Main.notify(_(out.toString().replace("\n", "")));
-        });
-        this.menu.addMenuItem(nordStatus);
-
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-        let nordConnect = new PopupMenu.PopupSubMenuMenuItem(_('Connect')); 
-        this.menu.addMenuItem(nordConnect);
-
-        let nordConnectFastest = new PopupMenu.PopupMenuItem(_('Fastest'));
-        nordConnectFastest.connect('activate', () => {
-            var [ok, out, err, exit] = GLib.spawn_command_line_sync('nordvpn connect');
-            Main.notify(_('Connecting...'));
-            if (out.toString().includes("connected"))
-            {
-                Main.notify(_("Connected"));
-            }
-            else
-            {
-                Main.notify(_("Failed to connect"));
-            }
-        });
-        nordConnect.menu.addMenuItem(nordConnectFastest);
-
-        let nordConnectUK = new PopupMenu.PopupMenuItem(_('United Kingdom'));
-        nordConnectUK.connect('activate', () => {
-            var [ok, out, err, exit] = GLib.spawn_command_line_sync('nordvpn connect uk');
-            if (out.toString().includes("connected"))
-            {
-                Main.notify(_("Connected"));
-            }
-            else
-            {
-                Main.notify(_("Failed to connect"));
-            }
-        });
-        nordConnect.menu.addMenuItem(nordConnectUK);
-
-        let nordConnectNL = new PopupMenu.PopupMenuItem(_('Netherlands'));
-        nordConnectNL.connect('activate', () => {
-            var [ok, out, err, exit] = GLib.spawn_command_line_sync('nordvpn connect nl');
-            if (out.toString().includes("connected"))
-            {
-                Main.notify(_("Connected"));
-            }
-            else
-            {
-                Main.notify(_("Failed to connect"));
-            }
-        });
-        nordConnect.menu.addMenuItem(nordConnectNL);
-
-        let nordDisconnect = new PopupMenu.PopupMenuItem(_('Disconnect'));
-        nordDisconnect.connect('activate', () => {
-            Main.notify(_('Disconnecting...'));
-            var [ok, out, err, exit] = GLib.spawn_command_line_sync('nordvpn disconnect');
-            if (out.toString().includes("disconnected"))
-            {
-                Main.notify(_("Disconnected"));
-            }
-            else
-            {
-                Main.notify(_("You are not connected to a VPN"));
-            }
-        });
-        this.menu.addMenuItem(nordDisconnect);
-    }
-});
-
-export default class IndicatorExampleExtension extends Extension {
+export default class NordVPNExtension extends Extension {
     enable() {
-        this._indicator = new Indicator();
-        Main.panel.addToStatusArea(this.uuid, this._indicator);
+        console.log(`Enabling ${this.metadata.name} - Version ${this.metadata.version}`);
+
+        this._manager = new Manager.Manager(this);
     }
 
     disable() {
-        this._indicator.destroy();
-        this._indicator = null;
+        console.log(`Disabling ${this.metadata.name} - Version ${this.metadata.version}`);
+
+        if (this._manager !== null) {
+            this._manager.destroy();
+            this._manager = null;
+        }
     }
 }
