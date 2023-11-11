@@ -1,8 +1,8 @@
 {
-  "name": "NordVPN GUI",
-  "description": "NordVPN terminal companion gnome-extension providing user interface",
-  "url": "https://github.com/PCLabTools/NordVPN-GUI",
-  "uuid": "nordvpngui@pclabtools.github.com",
+  "name": "NordVPN-ShellCompanion",
+  "description": "NordVPN-ShellCompanion is a NordVPN terminal application companion gnome-extension providing a simple user interface",
+  "url": "https://github.com/PCLabTools/NordVPN-ShellCompanion",
+  "uuid": "nordvpn-shellcompanion@pclabtools.github.com",
   "shell-version": [
     "45"
   ],
