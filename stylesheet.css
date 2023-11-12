@@ -1,1 +1,15 @@
 /* Add your custom extension styling here */
+
+.nordvpn-icon-connected {
+  background-image: url("icons/nordvpn-icon-connected.png");
+  background-size: 20px;
+  height: 20px;
+  width: 20px;
+}
+
+.nordvpn-icon-disconnected {
+  background-image: url("icons/nordvpn-icon-disconnected.png");
+  background-size: 20px;
+  height: 20px;
+  width: 20px;
+}

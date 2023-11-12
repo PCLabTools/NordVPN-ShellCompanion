@@ -40,8 +40,7 @@ export const DebianUpdatesIndicator = GObject.registerClass({
         super._init(0.0, `${this._extensionName}`, false);
 
         this._nordIcon = new St.Icon({
-            icon_name: 'face-smile-symbolic',
-            style_class: 'system-status-icon',
+            style_class: 'nordvpn-icon-connected'
         });
 
         this.add_child(this._nordIcon);

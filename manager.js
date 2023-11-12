@@ -60,14 +60,14 @@ export const Manager = class Manager {
         {
             this._indicator.nordStatus.visible = false;
             this._indicator.nordSeperator.visible = false;
-            this._indicator._nordIcon.icon_name = 'face-sad-symbolic';
+            this._indicator._nordIcon.style_class = 'nordvpn-icon-disconnected';
         }
         else
         {
             this._indicator.nordStatus.label.set_text(_(this._textDecoder.decode(out).substring(10)));
             this._indicator.nordStatus.visible = true;
             this._indicator.nordSeperator.visible = true;
-            this._indicator._nordIcon.icon_name = 'face-smile-symbolic';
+            this._indicator._nordIcon.style_class = 'nordvpn-icon-connected';
         }
         return true;
     }
